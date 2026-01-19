@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GymTrack - Your AI Fitness Companion</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: #000;
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+        }
+
+        /* Navbar */
+        nav {
+            padding: 12px 20px 8px;
+            background: rgba(0, 0, 0, 0.9);
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        /* Morphing Logo */
+        .logo {
+            position: relative;
+            width: 18px;
+            height: 20px;
+            flex-shrink: 0;
+        }
+
+        .logo-bar {
+            position: absolute;
+            background: #FF3B30;
+            border-radius: 100px;
+            transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        /* Chat mode (default) */
+        .logo-bar:nth-child(1) {
+            width: 8px;
+            height: 4px;
+            left: 6px;
+            top: 0;
+        }
+
+        .logo-bar:nth-child(2) {
+            width: 18px;
+            height: 4px;
+            left: 0;
+            top: 6px;
+        }
+
+        .logo-bar:nth-child(3) {
+            width: 14px;
+            height: 4px;
+            left: 2px;
+            top: 12px;
+        }
+
+        /* Stats mode */
+        .brand.stats .logo-bar:nth-child(1) {
+            width: 4px;
+            height: 14px;
+            left: 14px;
+            top: 6px;
+        }
+
+        .brand.stats .logo-bar:nth-child(2) {
+            width: 4px;
+            height: 8px;
+            left: 0;
+            top: 12px;
+        }
+
+        .brand.stats .logo-bar:nth-child(3) {
+            width: 4px;
+            height: 16px;
+            left: 7px;
+            top: 4px;
+        }
+
+        .brand-text {
+            font-size: 20px;
+            line-height: 1;
+            display: flex;
+            align-items: baseline;
+        }
+
+        .brand-text .bold {
+            font-weight: 700;
+        }
+
+        .brand-text .regular {
+            font-weight: 400;
+        }
+
+        .brand-text .mode {
+            font-weight: 400;
+            color: #FF3B30;
+            margin-left: 4px;
+            transition: opacity 0.3s ease;
+        }
+
+        /* Main Content */
+        main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+            text-align: center;
+        }
+
+        .hero {
+            max-width: 600px;
+            margin-bottom: 48px;
+        }
+
+        h1 {
+            font-size: clamp(32px, 8vw, 56px);
+            font-weight: 700;
+            margin-bottom: 16px;
+            line-height: 1.1;
+        }
+
+        .tagline {
+            font-size: clamp(16px, 4vw, 20px);
+            color: rgba(255, 255, 255, 0.7);
+            font-weight: 400;
+            line-height: 1.5;
+            margin-bottom: 32px;
+        }
+
+        /* CTA Buttons */
+        .cta-container {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            align-items: center;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 14px 28px;
+            font-size: 16px;
+            font-weight: 600;
+            border-radius: 100px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            min-width: 200px;
+        }
+
+        .btn-primary {
+            background: #FF3B30;
+            color: #fff;
+        }
+
+        .btn-primary:hover {
+            background: #ff5248;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(255, 59, 48, 0.4);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+
+        /* Coming Soon Badge */
+        .badge {
+            display: inline-block;
+            padding: 6px 14px;
+            background: rgba(255, 59, 48, 0.15);
+            color: #FF3B30;
+            border-radius: 100px;
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            margin-bottom: 24px;
+        }
+
+        /* Footer */
+        footer {
+            padding: 24px 20px;
+            text-align: center;
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 14px;
+        }
+
+        footer a {
+            color: #FF3B30;
+            text-decoration: none;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* Responsive */
+        @media (max-width: 640px) {
+            nav {
+                padding: 10px 16px 6px;
+            }
+
+            .brand-text {
+                font-size: 18px;
+            }
+
+            .cta-container {
+                width: 100%;
+            }
+
+            .btn {
+                width: 100%;
+                max-width: 300px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav>
+        <div class="nav-content">
+            <div class="brand" id="brand">
+                <div class="logo">
+                    <div class="logo-bar"></div>
+                    <div class="logo-bar"></div>
+                    <div class="logo-bar"></div>
+                </div>
+                <div class="brand-text">
+                    <span class="bold">Gym</span><span class="regular">Track</span><span class="mode" id="mode">Chat</span>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main>
+        <div class="hero">
+            <div class="badge">Coming Soon</div>
+            <h1>Your AI Fitness Companion</h1>
+            <p class="tagline">Track your workouts, get instant feedback, and reach your fitness goals with intelligent coaching powered by AI.</p>
+            
+            <div class="cta-container">
+                <a href="#beta" class="btn btn-primary" id="betaBtn">
+                    Join the Beta
+                </a>
+                <a href="https://apps.apple.com" class="btn btn-secondary" style="opacity: 0.5; pointer-events: none;">
+                    App Store (Coming Soon)
+                </a>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <p>© 2026 GymTrack. Built with 💪 for fitness enthusiasts.</p>
+        <p style="margin-top: 8px;">
+            Questions? <a href="mailto:rich@gymtrack.ai">rich@gymtrack.ai</a>
+        </p>
+    </footer>
+
+    <script>
+        // Logo animation toggle
+        const brand = document.getElementById('brand');
+        const mode = document.getElementById('mode');
+        let isStats = false;
+
+        brand.addEventListener('click', () => {
+            isStats = !isStats;
+            if (isStats) {
+                brand.classList.add('stats');
+                mode.textContent = 'Stats';
+            } else {
+                brand.classList.remove('stats');
+                mode.textContent = 'Chat';
+            }
+        });
+
+        // Beta button - for now just alerts, replace with actual signup form
+        document.getElementById('betaBtn').addEventListener('click', (e) => {
+            e.preventDefault();
+            alert('Beta signup coming soon! Email rich@gymtrack.ai to get early access.');
+        });
+    </script>
+</body>
+</html>
